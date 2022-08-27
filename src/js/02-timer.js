@@ -14,8 +14,6 @@ const refs = {
 refs.buttonStart.addEventListener('click', onClickBtnStart);
 //disabled для кнопки пока не выбрана дата
 refs.buttonStart.disabled = true;
-//disabled для инпута когда кнопка активна
-refs.input.disabled = false;
 
 const options = {
   isActive: false,
@@ -30,27 +28,26 @@ const options = {
     if (selectedDates[0] < options.defaultDate) {
       //Уведомление, что дата выбрана не правильно(библиотека notiflix)
       Notify.failure('Please choose a date in the future');
-
       return;
     }
     //Уведомление, что дата выбрана правильно (библиотека notiflix)
     Notify.success('The period for the timer is defined');
     //disabled для кнопки когда выбрана дата
     refs.buttonStart.disabled = false;
-    //disabled для инпута когда активен таймер
-    refs.input.disabled = true;
+
     //текущее время бля старта таймера от которого будет работать таймер
     const startDate = options.defaultDate;
-
     // конечная дата для таймера
     const endDate = selectedDates[0];
-
     // создается время для таймера
     options.deltaTime = endDate - startDate;
     const time = convertMs(options.deltaTime);
     onClockFaceTimer(time);
   },
   startTimer() {
+    //disabled для инпута когда активен таймер
+    refs.input.disabled = true;
+
     //disabled для инпута когда кнопка активна
     if (!refs.buttonStart.disabled) {
       refs.input.disabled = true;
@@ -74,28 +71,32 @@ const options = {
         refs.minutes.textContent === '00' &&
         refs.seconds.textContent === '00'
       ) {
+        //после окончания таймера снимаем disabled з инпута
+        refs.input.disabled = false;
+        options.isActive = false;
         return clearInterval(options.intervalId);
       }
+
       const deltaTimer = endTimer - Date.now();
       const timer = convertMs(deltaTimer);
       onClockFaceTimer(timer);
     }, 1000);
   },
 };
-
+//вешаем библиотеку flatpickr на инпут
 flatpickr(refs.input, options);
-
+//функция для старта таймера
 function onClickBtnStart() {
   options.startTimer();
 }
-
+//функция для вывода таймера на HTML
 function onClockFaceTimer({ days, hours, minutes, seconds }) {
   refs.data.textContent = pad(days);
   refs.hours.textContent = pad(hours);
   refs.minutes.textContent = pad(minutes);
   refs.seconds.textContent = pad(seconds);
 }
-
+//функция для определения дней, часов, минут, секунд
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -114,6 +115,7 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+//функция для вывода дополнительного нуля ели цифра состоит из одной цифры
 function pad(value) {
   return String(value).padStart(2, 0);
 }
