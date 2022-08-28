@@ -16,7 +16,6 @@ let onForm = {};
 let numberPosition = 0;
 let intervalId = null;
 let onDeley = 0;
-
 refs.btnResetStop.disabled = true;
 
 function startCreatePromise(e) {
@@ -32,7 +31,7 @@ function stopResetForm() {
   refs.submitBtn.disabled = false;
   refs.btnResetStop.disabled = true;
   numberPosition = 0;
-  onDeley = Number(onForm.step);
+  onDeley = Number(onForm.delay);
   console.log(onForm);
 }
 
@@ -41,11 +40,11 @@ function onSetInterval() {
     if (!refs.submitBtn.disabled) {
       refs.btnResetStop.disabled = true;
     }
+    onDeley = Number(onForm.delay);
     intervalId = setInterval(() => {
+      onDeley += Number(onForm.step);
       if (numberPosition !== Number(onForm.amount)) {
         numberPosition += 1;
-
-        onDeley += Number(onForm.step);
         return createPromise(numberPosition, onDeley)
           .then(({ position, delay }) => {
             Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
@@ -57,8 +56,9 @@ function onSetInterval() {
 
       clearInterval(intervalId);
       refs.submitBtn.disabled = false;
+      refs.btnResetStop.disabled = true;
       numberPosition = 0;
-      onDeley = Number(onForm.step);
+      onDeley = Number(onForm.delay);
     }, onForm.step);
   }, onForm.delay);
 }
