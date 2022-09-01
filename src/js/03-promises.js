@@ -25,6 +25,7 @@ function startCreatePromise(e) {
   refs.btnResetStop.disabled = false;
 
   onSetInterval();
+  refs.onForm.reset();
 }
 function stopResetForm() {
   clearInterval(intervalId);
@@ -32,7 +33,7 @@ function stopResetForm() {
   refs.btnResetStop.disabled = true;
   numberPosition = 0;
   onDeley = Number(onForm.delay);
-  console.log(onForm);
+  refs.onForm.reset();
 }
 
 function onSetInterval() {
